@@ -3,7 +3,7 @@ define ipa::replicaprepare (
   $dspw = {}
 ) {
 
-  Cron["k5start_root"] -> Exec["replicaprepare-${host}"] ~> Exec["replica-info-scp-${host}"] ~> Ipa::Hostdelete[$host]
+  Cron["k5start_root"] -> Exec["replicaprepare-${host}"] ~> Exec["replica-info-copy-${host}"] ~> Ipa::Hostdelete[$host]
 
   $file = "/var/lib/ipa/replica-info-${host}.gpg"
 
@@ -18,8 +18,8 @@ define ipa::replicaprepare (
     timeout => '0'
   }
 
-  exec { "replica-info-scp-${host}":
-    command     => shellquote('/usr/bin/scp','-q','-o','StrictHostKeyChecking=no','-o','GSSAPIAuthentication=yes','-o','ConnectTimeout=5','-o','ServerAliveInterval=2',"${file}","root@${host}:${file}"),
+  exec { "replica-info-copy-${host}":
+    command     => "/bin/echo put ${file} data/|/usr/bin/sftp -o StrictHostKeyChecking=no -o GSSAPIAuthentication=yes -o ConnectTimeout=5 -o ServerAliveInterval=2 -f - iparelica@${host}",
     refreshonly => true,
     tries       => '60',
     try_sleep   => '60'
