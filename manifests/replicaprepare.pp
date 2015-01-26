@@ -6,6 +6,7 @@ define ipa::replicaprepare (
   Cron["k5start_root"] -> Exec["replicaprepare-${host}"] ~> Exec["replica-info-copy-${host}"] ~> Ipa::Hostdelete[$host]
 
   $file = "/var/lib/ipa/replica-info-${host}.gpg"
+  $sshkeyfile = '/root/.ssh/ipareplica.id_rsa'
 
   realize Cron["k5start_root"]
 
@@ -19,7 +20,7 @@ define ipa::replicaprepare (
   }
 
   exec { "replica-info-copy-${host}":
-    command     => "/bin/echo put ${file} data/|/usr/bin/sftp -o StrictHostKeyChecking=no -o GSSAPIAuthentication=yes -o ConnectTimeout=5 -o ServerAliveInterval=2 -f - iparelica@${host}",
+    command     => "/bin/echo put ${file} data/|/usr/bin/sftp -i ${sshkeyfile} -o StrictHostKeyChecking=no -o GSSAPIAuthentication=yes -o ConnectTimeout=5 -o ServerAliveInterval=2 -f - iparelica@${host}",
     refreshonly => true,
     tries       => '60',
     try_sleep   => '60'
