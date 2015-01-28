@@ -9,7 +9,7 @@ define ipa::replicainstall (
 
   $file = "/var/lib/ipa/replica-info-${host}.gpg"
 
-  Exec["replicainfocheck-${host}"] ~> Exec["clientuninstall-${host}"] ~> Exec["replicainstall-${host}"] ~> Exec["removereplicainfo-${host}"]
+  Exec["replicainfocheck-${host}"] ~> Exec["replicainstall-${host}"]
 
   exec { "replicainfocheck-${host}":
     command   => "/usr/bin/test -e ${file}",
@@ -18,20 +18,10 @@ define ipa::replicainstall (
     unless    => '/usr/sbin/ipactl status >/dev/null 2>&1'
   }
 
-  exec { "clientuninstall-${host}":
-    command     => '/usr/sbin/ipa-client-install --uninstall --unattended',
-    refreshonly => true
-  }
-
   exec { "replicainstall-${host}":
     command     => "/usr/sbin/ipa-replica-install --admin-password=${adminpw} --password=${dspw} --skip-conncheck --unattended ${file}",
     timeout     => '0',
     logoutput   => 'on_failure',
-    refreshonly => true
-  }
-
-  exec { "removereplicainfo-${host}":
-    command     => "/bin/rm -f ${file}",
     refreshonly => true
   }
 }
