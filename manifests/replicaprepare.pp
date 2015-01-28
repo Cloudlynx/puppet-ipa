@@ -20,7 +20,7 @@ define ipa::replicaprepare (
   }
 
   exec { "replica-info-copy-${host}":
-    command     => "/bin/echo put ${file} data/|/usr/bin/sftp -i ${sshkeyfile} -o StrictHostKeyChecking=no -o GSSAPIAuthentication=yes -o ConnectTimeout=5 -o ServerAliveInterval=2 -f - iparelica@${host}",
+    command     => "/bin/echo put ${file} data/|/usr/bin/sftp -o IdentityFile=${sshkeyfile} -o StrictHostKeyChecking=no -o GSSAPIAuthentication=yes -o ConnectTimeout=5 -o ServerAliveInterval=2 -p - ipareplica@${host}",
     refreshonly => true,
     tries       => '60',
     try_sleep   => '60'
