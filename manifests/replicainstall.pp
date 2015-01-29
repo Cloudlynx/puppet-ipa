@@ -28,4 +28,7 @@ define ipa::replicainstall (
     logoutput   => 'on_failure',
     refreshonly => true
   }
+
+  Exec <| tag == 'rndc' |>
+  File <| tag == 'rndc' |>
 }

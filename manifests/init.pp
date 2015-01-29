@@ -144,6 +144,34 @@ class ipa (
     @package { $bindpkgs:
       ensure => installed
     }
+
+    # create the rndc configuration / key
+    @file { '/etc/rndc.key':
+      ensure => file,
+      owner  => 'root',
+      group  => 'named',
+      mode   => '0640',
+      tag    => 'rndc',
+    }
+
+    @exec { 'create-rndc':
+      path    => '/sbin:/usr/bin:/usr/sbin:/bin',
+      command => 'rndc-confgen -a',
+      creates => '/etc/rndc.key',
+      before  => File['/etc/rndc.key'],
+      require => Package[$bindpkgs],
+      tag     => 'rndc',
+    }
+
+    if $::selinux {
+      @exec { 'rndc-restorecon':
+        path        => '/sbin:/usr/bin:/usr/sbin:/bin',
+        command     => 'restorecon /etc/rndc.key',
+        refreshonly => true,
+        subscribe   => Exec['create-rndc'],
+        tag         => 'rndc',
+      }
+    }
   }
 
   @service { 'ipa':

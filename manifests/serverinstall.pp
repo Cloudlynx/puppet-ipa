@@ -35,6 +35,9 @@ define ipa::serverinstall (
     require => Anchor['ipa::serverinstall::start']
   }
 
+  Exec <| tag == 'rndc' |>
+  File <| tag == 'rndc' |>
+
   anchor { 'ipa::serverinstall::end':
     require => [Ipa::Flushcache["server-${host}"], Ipa::Adminconfig[$host]]
   }
