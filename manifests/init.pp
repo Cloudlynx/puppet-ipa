@@ -263,6 +263,12 @@ class ipa (
     if ! $ipa::dspw {
       fail('Required parameter "dspw" missing')
     }
+
+    if $ipa::sudo {
+      if ! $ipa::sudopw {
+        fail('Requiored parameter "sudopw" missing')
+      }
+    }
   }
 
   if $ipa::replica {
