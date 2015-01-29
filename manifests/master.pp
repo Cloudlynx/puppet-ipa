@@ -12,6 +12,7 @@
 #
 class ipa::master (
   $svrpkg        = {},
+  $bindpkgs      = {},
   $dns           = {},
   $forwarders    = [],
   $realm         = {},
@@ -92,6 +93,7 @@ class ipa::master (
   }
 
   if $ipa::master::dns {
+    realize Package[$bindpkgs]
     if size($ipa::master::forwarders) > 0 {
       $forwarderopts = join(prefix($ipa::master::forwarders, '--forwarder '), ' ')
     }

@@ -101,6 +101,7 @@ class ipa (
   $automount     = false,
   $autofs        = false,
   $svrpkg        = 'ipa-server',
+  $bindpkgs      = ['bind','bind-dyndb-ldap'],
   $clntpkg       = $::osfamily ? {
     Debian  => 'freeipa-client',
     default => 'ipa-client',
@@ -135,6 +136,12 @@ class ipa (
 
   if $ipa::kstart {
     @package { 'kstart':
+      ensure => installed
+    }
+  }
+
+  if $ipa::dns {
+    @package { $bindpkgs:
       ensure => installed
     }
   }
@@ -218,8 +225,9 @@ class ipa (
       fail('Conflicting options selected. Cannot cleanup during an installation.')
     } else {
       ipa::cleanup { $::fqdn:
-        svrpkg  => $ipa::svrpkg,
-        clntpkg => $ipa::clntpkg
+        svrpkg   => $ipa::svrpkg,
+        clntpkg  => $ipa::clntpkg,
+        bindpkgs => $ipa::bindpkgs,
       }
     }
   }
@@ -227,6 +235,7 @@ class ipa (
   if $ipa::master {
     class { 'ipa::master':
       svrpkg        => $ipa::svrpkg,
+      bindpkgs      => $ipa::bindpkgs,
       dns           => $ipa::dns,
       forwarders    => $ipa::forwarders,
       domain        => downcase($ipa::domain),
@@ -274,6 +283,7 @@ class ipa (
   if $ipa::replica {
     class { 'ipa::replica':
       svrpkg      => $ipa::svrpkg,
+      bindpkgs    => $ipa::bindpkgs,
       domain      => downcase($ipa::domain),
       adminpw     => $ipa::adminpw,
       dspw        => $ipa::dspw,

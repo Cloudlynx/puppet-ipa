@@ -12,6 +12,7 @@
 #
 class ipa::replica (
   $svrpkg      = {},
+  $bindpkgs    = {},
   $adminpw     = {},
   $dspw        = {},
   $domain      = {},
@@ -61,6 +62,7 @@ class ipa::replica (
   }
 
   if $ipa::replica::dns {
+    realize Package[$bindpkgs]
     if size($ipa::replica::forwarders) > 0 {
       $forwarderopts = join(prefix($ipa::replica::forwarders, '--forwarder '), ' ')
     }

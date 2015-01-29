@@ -2,8 +2,9 @@
 #
 # Cleans up an IPA installation
 define ipa::cleanup (
-  $svrpkg  = {},
-  $clntpkg = {}
+  $svrpkg   = {},
+  $clntpkg  = {},
+  $bindpkgs = {},
 ) {
 
   $pkgrmcmd = $::osfamily ? {
@@ -12,6 +13,7 @@ define ipa::cleanup (
   }
 
   $pkgcmd = regsubst($pkgrmcmd,'\s.*$','')
+  $bindpkglist = join($bindpkgs,' ')
 
   Cron['k5start_admin'] -> Cron['k5start_root'] -> Exec["cleanup-${name}"]
 
@@ -21,7 +23,7 @@ define ipa::cleanup (
                  if [ -x /usr/sbin/ipa-client-install ]; then /bin/echo | /usr/sbin/ipa-client-install --uninstall --unattended ; fi ;\
                  if [ -x /usr/sbin/ipa-server-install ]; then /usr/sbin/ipa-server-install --uninstall --unattended ; fi ;\
                  if [ -d /var/lib/pki-ca ]; then /usr/bin/pkiremove -pki_instance_root=/var/lib -pki_instance_name=pki-ca -force ; fi ;\
-                 if [ -x ${pkgcmd} ]; then ${pkgrmcmd} ${svrpkg} ${clntpkg} krb5-server 389-ds-base 389-ds-base-libs pki-ca pki-util pki-ca certmonger pki-native-tools pki-symkey pki-setup ipa-pki-common-theme pki-selinux ipa-pki-ca-theme ipa-python ; fi ;\
+                 if [ -x ${pkgcmd} ]; then ${pkgrmcmd} ${svrpkg} ${clntpkg} ${bindpkglist} krb5-server 389-ds-base 389-ds-base-libs pki-ca pki-util pki-ca certmonger pki-native-tools pki-symkey pki-setup ipa-pki-common-theme pki-selinux ipa-pki-ca-theme ipa-python ; fi ;\
                  if [ -e /etc/openldap/ldap.conf.ipabkp ]; then /bin/cp -f /etc/openldap/ldap.conf.ipabkp /etc/openldap/ldap.conf ; fi ;\
                  if [ -e /etc/krb5.conf.ipabkp ]; then /bin/cp -f /etc/krb5.conf.ipabkp /etc/krb5.conf ; fi ;\
                  if [ -e /etc/krb5.keytab ]; then /bin/mv -f /etc/krb5.keytab /etc/krb5.keytab.puppet-ipa.cleanup ; fi ;\
