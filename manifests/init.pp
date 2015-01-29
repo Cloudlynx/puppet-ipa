@@ -272,7 +272,11 @@ class ipa (
       adminpw     => $ipa::adminpw,
       dspw        => $ipa::dspw,
       kstart      => $ipa::kstart,
-      sssd        => $ipa::sssd
+      sssd        => $ipa::sssd,
+      dns         => $ipa::dns,
+      forwarders  => $ipa::forwarders,
+      ntp         => $ipa::ntp,
+      extca       => $ipa::extca,
     }
 
     class { 'ipa::client':

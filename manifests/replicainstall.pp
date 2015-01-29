@@ -2,9 +2,13 @@
 #
 # Installs an IPA replica
 define ipa::replicainstall (
-  $host    = $name,
-  $adminpw = {},
-  $dspw    = {}
+  $host          = $name,
+  $adminpw       = {},
+  $dspw          = {},
+  $forwarderopts = {},
+  $dnsopt        = {},
+  $ntpopt        = {},
+  $extcaopt      = {},
 ) {
 
   $file = "/var/lib/ipa/replica-info-${host}.gpg"
@@ -19,7 +23,7 @@ define ipa::replicainstall (
   }
 
   exec { "replicainstall-${host}":
-    command     => "/usr/sbin/ipa-replica-install --admin-password=${adminpw} --password=${dspw} --skip-conncheck --unattended ${file}",
+    command     => "/usr/sbin/ipa-replica-install --admin-password=${adminpw} --password=${dspw} --skip-conncheck $dnsopt $forwarderopts $ntpopt $extcaopt --unattended ${file}",
     timeout     => '0',
     logoutput   => 'on_failure',
     refreshonly => true

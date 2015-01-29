@@ -160,14 +160,14 @@ class ipa::master (
     ensure => 'present',
     action => 'accept',
     proto  => 'tcp',
-    dport  => ['80','88','389','443','464','636']
+    dport  => ['80','88','389','443','464','636','53']
   }
 
   firewall { '102 allow IPA master UDP services (kerberos,kpasswd,ntp)':
     ensure => 'present',
     action => 'accept',
     proto  => 'udp',
-    dport  => ['88','123','464']
+    dport  => ['88','123','464','53']
   }
 
   @@ipa::replicapreparefirewall { $::fqdn:
